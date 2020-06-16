@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
+import './home.css'
 
 class Home extends Component{
     constructor(props){
         super(props);
         this.state = {
             dropdownclick: false,
+            coords: [],
             cx: 600,
             cy: 400,
             r: 200,
@@ -12,12 +14,24 @@ class Home extends Component{
             currenttheta: Math.PI,
             wordcx: 0,
             wordcy: 0,
+            word2cx:0,
+            word2cy:0,
+            word3cx:0,
+            word3cy:0,
+            word4cx:0,
+            word4cy:0,
             onumticks: 6000,
             timeout: null,
             tickinterval: 5,
         }
         this.routeAboutMe.bind(this);
     }
+
+    componentDidMount = () =>{
+        //this is controlling the auto rotate
+        setInterval(this.updaterotationcoords, this.state.tickinterval);
+    }
+
     routeHome = () => {
         this.props.history.push("/"); 
     }
@@ -71,6 +85,28 @@ class Home extends Component{
         this.setState({wordcx : wordcx});
         this.setState({wordcy: wordcy});
         this.setState({currenttheta: newtheta});
+        
+        //the second word will be opposite or pi away from the original, and it will be the opposite quadrant
+        var temptheta = (newtheta + Math.PI)%(2*Math.PI);
+        var word2cx = this.state.cx + (xsign * this.state.r * Math.cos(temptheta));
+        var word2cy = this.state.cy + (ysign * this.state.r * Math.sin(temptheta));
+        this.setState({word2cx: word2cx});
+        this.setState({word2cy: word2cy});
+
+        //now the first intermideate -- this will be pi/2 away
+        var temptheta = (newtheta + Math.PI/2)%(2*Math.PI);
+        var word3cx = this.state.cx + (xsign * this.state.r * Math.cos(temptheta));
+        var word3cy = this.state.cy + (ysign * this.state.r * Math.sin(temptheta));
+        this.setState({word3cx: word3cx});
+        this.setState({word3cy: word3cy});
+
+         //now the second intermideate -- this will be 3pi/2 away
+         var temptheta = (newtheta + 3*Math.PI/2)%(2*Math.PI);
+         var word4cx = this.state.cx + (xsign * this.state.r * Math.cos(temptheta));
+         var word4cy = this.state.cy + (ysign * this.state.r * Math.sin(temptheta));
+         this.setState({word4cx: word4cx});
+         this.setState({word4cy: word4cy});
+
     }
 
     //if there has been movement, slow down the rotation speed by 10x
@@ -88,26 +124,28 @@ class Home extends Component{
         if(this.state.dropdownclick){
             var dropdown = (
                 // this div should style the stuff horizontally
-                <div>
-                    <div className = 'dropdown'>
-                        <li onClick = {this.routeHome}>Home</li>
-                        <li onClick = {this.routeExperience}>Experience</li>
-                        <li onClick = {this.routeAboutMe}>About Me</li>
-                        <li onClick = {this.routeProjects}>Projects</li>
+                
+                    <div class = 'dropdown'>
+                        <ul onClick = {this.routeHome}>Home</ul>
+                        <ul onClick = {this.routeExperience}>Experience</ul>
+                        <ul onClick = {this.routeAboutMe}>About Me</ul>
+                        <ul onClick = {this.routeProjects}>Projects</ul>
                     </div>
-                </div>
+            
             );
         }
-        //this is controlling the auto rotate
-        setInterval(this.updaterotationcoords, this.state.tickinterval);
+
         return(
             <div className = 'App' onMouseMove = {this.onMouseMove}>
                 <p onClick = {this.updaterotationcoords}>Hello</p>
                 <div className = "dropdown">
                     <p onClick = {this.updateDropDown}> {dropdown}</p>
                 </div>
-
                 <h1 style = {{top: this.state.wordcy, left: this.state.wordcx, width: 20, height: 10, position: "absolute"}}> Rotating</h1>
+                <h1 style = {{top: this.state.word2cy, left: this.state.word2cx, width: 20, height: 10, position: "absolute"}}> Rotating2</h1>
+                <h1 style = {{top: this.state.word3cy, left: this.state.word3cx, width: 20, height: 10, position: "absolute"}}> Rotating3</h1>
+                <h1 style = {{top: this.state.word4cy, left: this.state.word4cx, width: 20, height: 10, position: "absolute"}}> Rotating3</h1>
+
             </div>
         );
     }
