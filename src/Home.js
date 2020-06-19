@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import './home.css';
 import {inv, multiply} from 'mathjs';
+import Letter from './Letter';
 
 class Home extends Component{
     constructor(props){
@@ -22,18 +23,12 @@ class Home extends Component{
             word4cx:0,
             word4cy:0,
             lcx: 300,
-            lcy: 700,
+            lcy: 100,
             otickinterval: 5,
             timeout: null,
             tickinterval: 5,
-            wordarray: ['person'],
-            currentletterx: null,
-            currentlettery: null,
-            a: 0,
-            c: 0,
-            increment: 0,
-            point2: [0,0],
-            reached: false,
+            wordarray: ['Welcome to my Website'],
+            letterArray: [],
         }
         this.routeAboutMe.bind(this);
     }
@@ -41,8 +36,7 @@ class Home extends Component{
     componentDidMount = () =>{
         //this is controlling the auto rotate
         setInterval(this.updaterotationcoords, this.state.tickinterval);
-        this.appearingletters();
-        setInterval(this.traverseletters, 5);
+        this.createLetterArray();
     }
     
 
@@ -60,6 +54,22 @@ class Home extends Component{
     }
     updateDropDown = () => {
         this.setState({dropdownclick: true});
+    }
+    updateLetterState = () => {
+        //update the state of the current letter i.e. wheter its time to move to the next or not
+        this.setState({nextletter: true})
+    }
+
+    createLetterArray = () => {
+        //need to give the letters coordinates such that they can form the equally spaced word
+        var startx = 200; 
+        var space = 15;
+        for(var i = 0; i < this.state.wordarray[0].length; i = i + 1){
+            var letter = <Letter letter = {this.state.wordarray[0][i]} gx = {startx} gy = {600} updateLetterState = {this.updateLetterState}/>
+            this.state.letterArray.push(letter);
+            startx = startx + space;
+        }
+        console.log(this.state.letterArray)
     }
 
     updaterotationcoords = () => {
@@ -122,54 +132,6 @@ class Home extends Component{
          this.setState({word4cy: word4cy});
     }
 
-    //this function will essentially circulate through the letters at hand 
-    traverseletters = () => {
-        //at this point we have some parabola that models the path between the two points given by: y = ax^2 + c
-        //we want to continually update the position of the current letter everytime this function is called
-        //essentially the if statement ensures the current letter is between the starting and ending x-vals
-        if(((this.state.point2[0]<= this.state.currentletterx) && (this.state.currentletterx <= this.state.lcx)) || ((this.state.point2[0] >= this.state.currentletterx) && (this.state.currentletterx >= this.state.lcx))){
-            var cx = this.state.currentletterx + this.state.increment;
-            var cy = this.state.a * cx**2   + this.state.c;
-            this.setState({currentletterx: cx});
-            this.setState({currentlettery: cy})
-        }
-    }
-
-    //this is the method where I play around with my appearing words feature
-   appearingletters = () => {
-    //in essence I'm first trying to create a parabolic path ( y = ax^2 + c)between two arbitrary points
-    //then im trying to use points along that path to create the illusion of movement 
-    //generate random point coords
-    //also we only generate these coords if there are more letters left
-
-    var point1 = [this.state.lcx, this.state.lcy];
-    var point2 = [1880* Math.random(), 900 * Math.random()];
-    this.setState({currentletterx: point2[0]});
-    this.setState({currentlettery: point2[1]});
-    this.setState({point2: point2});
-    //y column vector (y1 y2)' y pixel positions - might invert the positions
-    var y = [[point1[1]],[point2[1]]];
-    //matrix containing (x1^2 1; x2^2 1)
-    var M = [[Math.pow(point1[0],2), 1], [Math.pow(point2[0],2), 1]];
-    //u vector containing (a b)'
-    var u = [];
-    //calculate u = M^-1 * y
-    //god bless this library 
-    u = multiply(inv(M),y);
-    var a = u[0][0];
-    var c = u[1][0];
-    //update the global states
-    this.setState({a: a});
-    this.setState({c: c});
-    //we want to know the direction of change for the x value (i.e left or right)
-    var increment = Math.abs(point1[0] - point2[0])/1000;
-    var sign = 1;
-    if(point1[0] < point2[0]){
-        sign = -1;
-    }
-    this.setState({increment: sign*increment});
-   }
-
     render(){
         var dropdown = (
             <div>
@@ -190,20 +152,31 @@ class Home extends Component{
             
             );
         }
-
+        //construct the letter array with Letter components
+        // this.createLetterArray();
+        // var letter = <Letter letter = "L" gx = {800} gy = {600} updateLetterState = {this.updateLetterState}/>
+        var letterArray = [];
+        var startx = 200; 
+        var space = 25  ;
+        for(var i = 0; i < this.state.wordarray[0].length; i = i + 1){
+            var letter = <Letter letter = {this.state.wordarray[0][i]} gx = {startx} gy = {600} updateLetterState = {this.updateLetterState}/>
+            letterArray.push(letter);
+            startx = startx + space;
+        }
         return(
             <div className = 'App'>
                 <p onClick = {this.updaterotationcoords}>Hello</p>
                 <div className = "dropdown">
                     <p onClick = {this.updateDropDown}> {dropdown}</p>
                 </div>
+
                 <h1 style = {{top: this.state.wordcy, left: this.state.wordcx, width: 20, height: 10, position: "absolute"}}> Rotating</h1>
                 <h1 style = {{top: this.state.word2cy, left: this.state.word2cx, width: 20, height: 10, position: "absolute"}}> Rotating2</h1>
                 <h1 style = {{top: this.state.word3cy, left: this.state.word3cx, width: 20, height: 10, position: "absolute"}}> Rotating3</h1>
                 <h1 style = {{top: this.state.word4cy, left: this.state.word4cx, width: 20, height: 10, position: "absolute"}}> Rotating3</h1>
                 
-                <h2 style = {{top: this.state.currentlettery, left: this.state.currentlettery, width: 20, height: 10, position: "absolute"}}> L </h2>
-                
+                {/* <h2 style = {{top: this.state.currentlettery, left: this.state.currentlettery, width: 20, height: 10, position: "absolute"}}> L </h2> */}
+                {letterArray}
             </div>
         );
     }
