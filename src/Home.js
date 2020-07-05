@@ -2,15 +2,19 @@ import React, {Component} from 'react';
 import './home.css';
 import {inv, multiply} from 'mathjs';
 import Letter from './Letter';
-
+//import all the images
+import greenplanent from './images/green_planet.png';
+import marsplanet from './images/mars_planet.png';
+import blueorangeplanet from './images/blue-orange_planet.png';
+import asteroid from './images/asteroid.png';
 class Home extends Component{
     constructor(props){
         super(props);
         this.state = {
             dropdownclick: false,
             coords: [],
-            cx: 650,
-            cy: 500,
+            cx: window.innerWidth/2 - 100,
+            cy: window.innerHeight/2,
             r: 200,
             numticks: 6000,
             currenttheta: Math.PI,
@@ -24,11 +28,15 @@ class Home extends Component{
             word4cy:0,
             lcx: 300,
             lcy: 100,
-            otickinterval: 5,
+            otickinterval: 7,
             timeout: null,
-            tickinterval: 5,
-            wordarray: ['Welcome to my Website'],
+            tickinterval: 7,
+            wordarray: ['Welcome'],
             letterArray: [],
+            planet1w: 230,
+            planet2w: 200,
+            planet3w: 200, 
+            planet4w: 230,
         }
         this.routeAboutMe.bind(this);
     }
@@ -52,6 +60,9 @@ class Home extends Component{
     routeExperience = () => {
         this.props.history.push("/experience"); 
     }
+    routeSocialMedia = () => {
+
+    }
     updateDropDown = () => {
         this.setState({dropdownclick: true});
     }
@@ -62,10 +73,10 @@ class Home extends Component{
 
     createLetterArray = () => {
         //need to give the letters coordinates such that they can form the equally spaced word
-        var startx = 200; 
+        var startx = window.innerWidth - 100; 
         var space = 15;
         for(var i = 0; i < this.state.wordarray[0].length; i = i + 1){
-            var letter = <Letter letter = {this.state.wordarray[0][i]} gx = {startx} gy = {600} updateLetterState = {this.updateLetterState}/>
+            var letter = <Letter letter = {this.state.wordarray[0][i]} gx = {startx} gy = {window.innerHeight/2} updateLetterState = {this.updateLetterState}/>
             this.state.letterArray.push(letter);
             startx = startx + space;
         }
@@ -148,6 +159,7 @@ class Home extends Component{
                         <ul onClick = {this.routeExperience}>Experience</ul>
                         <ul onClick = {this.routeAboutMe}>About Me</ul>
                         <ul onClick = {this.routeProjects}>Projects</ul>
+                        <ul onClick = {this.routeSocialMedia}> Contact</ul>
                     </div>
             
             );
@@ -164,19 +176,32 @@ class Home extends Component{
             startx = startx + space;
         }
         return(
-            <div className = 'App'>
-                <p onClick = {this.updaterotationcoords}>Hello</p>
-                <div className = "dropdown">
-                    <p onClick = {this.updateDropDown}> {dropdown}</p>
-                </div>
+            <div className = 'background'>
+                <div className = 'Home'>
+                        <div className = "dropdown">
+                            <p onClick = {this.updateDropDown}> {dropdown}</p>
+                        </div>
+                        {/* im really just going to hard code in the word placement on top of the planets */}
+                        <div className = 'circleText'>
+                            <img src = {greenplanent} style = {{top: this.state.wordcy, left: this.state.wordcx, width: this.state.planet1w, position: "absolute"}} onClick = {this.routeExperience} />
+                            <h2 style = {{top: this.state.wordcy + 70, left: this.state.wordcx + this.state.planet1w/4.2, width: 15, height: 10, position: "absolute"}} onClick = {this.routeExperience}> Experience</h2>
 
-                <h1 style = {{top: this.state.wordcy, left: this.state.wordcx, width: 20, height: 10, position: "absolute"}}> Rotating</h1>
-                <h1 style = {{top: this.state.word2cy, left: this.state.word2cx, width: 20, height: 10, position: "absolute"}}> Rotating2</h1>
-                <h1 style = {{top: this.state.word3cy, left: this.state.word3cx, width: 20, height: 10, position: "absolute"}}> Rotating3</h1>
-                <h1 style = {{top: this.state.word4cy, left: this.state.word4cx, width: 20, height: 10, position: "absolute"}}> Rotating3</h1>
-                
-                {/* <h2 style = {{top: this.state.currentlettery, left: this.state.currentlettery, width: 20, height: 10, position: "absolute"}}> L </h2> */}
-                {letterArray}
+                            <img src = {marsplanet} style = {{top: this.state.word2cy, left: this.state.word2cx, width: this.state.planet2w, position: "absolute"}} onClick = {this.routeExperience} />
+                            <h2 style = {{top: this.state.word2cy + 60, left: this.state.word2cx + this.state.planet2w/4.2 , width: 20, height: 10, position: "absolute"}} onClick = {this.routeProjects}> Projects</h2>
+
+                            <img src = {blueorangeplanet} style = {{top: this.state.word3cy, left: this.state.word3cx, width: this.state.planet3w, position: "absolute"}} onClick = {this.routeExperience} />
+                            <h2 style = {{top: this.state.word3cy + 60, left: this.state.word3cx + this.state.planet3w/4.2, width: 20, height: 10, position: "absolute"}} onClick = {this.routeAboutMe}> About Me</h2>
+
+                            <img src = {asteroid} style = {{top: this.state.word4cy, left: this.state.word4cx, width: this.state.planet4w, position: "absolute"}} onClick = {this.routeExperience} />
+                            <h2 style = {{top: this.state.word4cy + 70, left: this.state.word4cx + this.state.planet4w/4, width: 20, height: 10, position: "absolute"}} onClick = {console.log("hello")}> Contact</h2>
+                        </div>
+                        <div className = 'floatingLetters'>
+                            {letterArray}
+                        </div>
+                        {/* <img src ={require('https://www.google.com/url?sa=i&url=https%3A%2F%2Fya-webdesign.com%2Fexplore%2Fcool-planet-png%2F&psig=AOvVaw1EKJdy9LwpWfaAo0WLwnEf&ust=1592789279812000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCOjS3c_gkeoCFQAAAAAdAAAAABAc')} ></img> */}
+
+                        
+                </div>
             </div>
         );
     }

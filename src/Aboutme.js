@@ -7,7 +7,7 @@ class Aboutme extends Component{
     render(){
         return(
             <div className = 'App'>
-                <p>aboutme</p>
+                <p>Hi, I'm Gokul Srinivasan</p>
             </div>
         );
     }
